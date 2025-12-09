@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notebook Management - Hogwarts Library</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: radial-gradient(circle at 20% 80%, rgba(255, 215, 0, 0.1) 0%, transparent 50%),
+                              radial-gradient(circle at 80% 20%, rgba(255, 69, 0, 0.1) 0%, transparent 50%),
+                              radial-gradient(circle at 40% 40%, rgba(138, 43, 226, 0.1) 0%, transparent 50%);
+            animation: twinkle 4s ease-in-out infinite alternate;
+        }
+        @keyframes twinkle {
+            0% { opacity: 0.3; }
+            100% { opacity: 0.7; }
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            position: relative;
+            z-index: 1;
+        }
+        h1 {
+            font-family: 'Cinzel', serif;
+            color: #f4e4bc;
+            text-align: center;
+            font-size: 3em;
+            margin-bottom: 40px;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.5);
+        }
+        .add-btn {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 25px;
+            margin-bottom: 30px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            font-family: 'Cinzel', serif;
+            border: 2px solid #8b4513;
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3);
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .add-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(39, 174, 96, 0.4);
+        }
+        .table-container {
+            background: linear-gradient(145deg, #f4e4bc 0%, #d4af37 100%);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            border: 3px solid #8b4513;
+            overflow: hidden;
+            position: relative;
+        }
+        .table-container::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text fill="%238b4513" font-size="20" y="50%">✨</text></svg>') repeat;
+            opacity: 0.1;
+            animation: float 6s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            position: relative;
+            z-index: 1;
+        }
+        th {
+            background: linear-gradient(135deg, #8b4513 0%, #a0522d 100%);
+            color: #f4e4bc;
+            padding: 20px;
+            text-align: left;
+            font-family: 'Cinzel', serif;
+            font-size: 18px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 3px solid #d4af37;
+        }
+        td {
+            padding: 20px;
+            border-bottom: 1px solid #8b4513;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+        tr:nth-child(even) {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        tr:hover {
+            background: rgba(255, 215, 0, 0.1);
+            transform: scale(1.01);
+            transition: all 0.3s ease;
+        }
+        .actions {
+            display: flex;
+            gap: 10px;
+        }
+        .btn {
+            padding: 8px 15px;
+            text-decoration: none;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: 'Cinzel', serif;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: 2px solid #8b4513;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            box-shadow: 0 3px 10px rgba(52, 152, 219, 0.3);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+        .btn-secondary {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            color: white;
+            box-shadow: 0 3px 10px rgba(243, 156, 18, 0.3);
+        }
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(243, 156, 18, 0.4);
+        }
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            box-shadow: 0 3px 10px rgba(231, 76, 60, 0.3);
+        }
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.4);
+        }
+        .no-data {
+            text-align: center;
+            padding: 80px 40px;
+            color: #8b4513;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            border: 2px solid #d4af37;
+        }
+        .no-data h3 {
+            font-family: 'Cinzel', serif;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            color: #d4af37;
+        }
+        .no-data p {
+            font-size: 18px;
+            color: #f4e4bc;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 10px;
+            }
+            h1 {
+                font-size: 2em;
+            }
+            .table-container {
+                padding: 15px;
+            }
+            th, td {
+                padding: 10px 5px;
+                font-size: 14px;
+            }
+            .actions {
+                flex-direction: column;
+                gap: 5px;
+            }
+            .btn {
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><i class="fas fa-hat-wizard"></i> Hogwarts Notebook Library</h1>
+        <a href="{% url 'notebook_create' %}" class="add-btn">
+            <i class="fas fa-plus-circle"></i> Add New Magical Notebook
+        </a>
+
+        {% if notebooks %}
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th><i class="fas fa-image"></i> Image</th>
+                        <th><i class="fas fa-book"></i> Name</th>
+                        <th><i class="fas fa-coins"></i> Price</th>
+                        <th><i class="fas fa-calendar-alt"></i> Created</th>
+                        <th><i class="fas fa-magic"></i> Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for notebook in notebooks %}
+                    <tr>
+                        <td>
+                            {% if notebook.image %}
+                                <img src="{{ notebook.image.url }}" alt="{{ notebook.name }}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px; border: 2px solid #d4af37;">
+                            {% else %}
+                                <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #bdc3c7 0%, #95a5a6 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; border: 2px solid #8b4513;">
+                                    <i class="fas fa-book" style="color: #34495e; font-size: 24px;"></i>
+                                </div>
+                            {% endif %}
+                        </td>
+                        <td>{{ notebook.name }}</td>
+                        <td><strong>${{ notebook.price }}</strong></td>
+                        <td>{{ notebook.created_at|date:"M d, Y" }}</td>
+                        <td class="actions">
+                            <a href="{% url 'notebook_detail' notebook.pk %}" class="btn btn-primary">
+                                <i class="fas fa-eye"></i> View
+                            </a>
+                            <a href="{% url 'notebook_update' notebook.pk %}" class="btn btn-secondary">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                            <a href="{% url 'notebook_delete' notebook.pk %}" class="btn btn-danger">
+                                <i class="fas fa-trash"></i> Delete
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="no-data">
+            <h3><i class="fas fa-books"></i> No Notebooks Found</h3>
+            <p>Start by adding your first magical notebook to the Hogwarts Library!</p>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

@@ -1,0 +1,21 @@
+# Python / Django service
+
+# Bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual envs
+venv/
+.env/
+.venv/
+
+# Django
+db.sqlite3
+media/
+staticfiles/
+*.log
+
+# Migrations (optional)
+# migrations/
+# !migrations/__init__.py

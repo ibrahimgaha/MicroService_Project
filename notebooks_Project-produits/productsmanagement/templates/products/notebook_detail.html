@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ notebook.name }} - Magical Details</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: radial-gradient(circle at 20% 80%, rgba(255, 215, 0, 0.1) 0%, transparent 50%),
+                              radial-gradient(circle at 80% 20%, rgba(255, 69, 0, 0.1) 0%, transparent 50%),
+                              radial-gradient(circle at 40% 40%, rgba(138, 43, 226, 0.1) 0%, transparent 50%);
+            animation: twinkle 4s ease-in-out infinite alternate;
+        }
+        @keyframes twinkle {
+            0% { opacity: 0.3; }
+            100% { opacity: 0.7; }
+        }
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: linear-gradient(145deg, #f4e4bc 0%, #d4af37 100%);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3), inset 0 0 20px rgba(255, 215, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            border: 3px solid #8b4513;
+        }
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text fill="%238b4513" font-size="20" y="50%">✨</text></svg>') repeat;
+            opacity: 0.1;
+            animation: float 6s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        h1 {
+            font-family: 'Cinzel', serif;
+            color: #8b4513;
+            margin-bottom: 40px;
+            text-align: center;
+            font-size: 2.8em;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        .notebook-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 40px;
+        }
+        .notebook-icon {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3em;
+            box-shadow: 0 10px 30px rgba(231, 76, 60, 0.3);
+            margin-right: 30px;
+        }
+        .notebook-title {
+            flex: 1;
+        }
+        .detail-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 2px solid #d4af37;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .detail-row {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+        .label {
+            font-weight: 600;
+            color: #2c3e50;
+            min-width: 140px;
+            margin-right: 20px;
+            font-family: 'Cinzel', serif;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .value {
+            color: #34495e;
+            font-weight: 500;
+            font-size: 16px;
+        }
+        .price {
+            font-size: 28px;
+            color: #27ae60;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+        .description {
+            background: linear-gradient(135deg, #ecf0f1 0%, #bdc3c7 100%);
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #34495e;
+            margin-bottom: 25px;
+        }
+        .description .label {
+            margin-bottom: 10px;
+        }
+        .actions {
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 3px solid #8b4513;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        .btn {
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            border: 2px solid #8b4513;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-family: 'Cinzel', serif;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+        .btn:hover::before {
+            left: 100%;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            color: white;
+            box-shadow: 0 5px 15px rgba(243, 156, 18, 0.3);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(243, 156, 18, 0.4);
+        }
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+        }
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(231, 76, 60, 0.4);
+        }
+        .back-link {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #8b4513;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            font-family: 'Cinzel', serif;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 15px;
+            border-radius: 20px;
+            border: 2px solid #d4af37;
+        }
+        .back-link:hover {
+            color: #d4af37;
+            background: rgba(255, 255, 255, 1);
+        }
+        @media (max-width: 768px) {
+            .container {
+                margin: 20px;
+                padding: 20px;
+            }
+            h1 {
+                font-size: 2em;
+                flex-direction: column;
+                gap: 10px;
+            }
+            .notebook-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            .notebook-icon {
+                margin-right: 0;
+                margin-bottom: 20px;
+            }
+            .actions {
+                flex-direction: column;
+                align-items: center;
+            }
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="{% url 'notebook_list' %}" class="back-link"><i class="fas fa-arrow-left"></i> Back to Hogwarts Library</a>
+        <div class="notebook-header">
+            <div class="notebook-icon">
+                <i class="fas fa-book-open"></i>
+            </div>
+            <h1>{{ notebook.name }}</h1>
+        </div>
+
+        {% if notebook.image %}
+        <div class="notebook-image-display">
+            <img src="{{ notebook.image.url }}" alt="{{ notebook.name }}" style="max-width: 300px; max-height: 300px; border-radius: 15px; border: 3px solid #d4af37; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
+        </div>
+        {% endif %}
+
+        <div class="detail-card">
+            <div class="detail-row">
+                <span class="label"><i class="fas fa-coins"></i> Price:</span>
+                <span class="value price">${{ notebook.price }}</span>
+            </div>
+
+            <div class="detail-row">
+                <span class="label"><i class="fas fa-calendar-plus"></i> Created:</span>
+                <span class="value">{{ notebook.created_at|date:"M d, Y H:i" }}</span>
+            </div>
+
+            <div class="detail-row">
+                <span class="label"><i class="fas fa-calendar-check"></i> Updated:</span>
+                <span class="value">{{ notebook.updated_at|date:"M d, Y H:i" }}</span>
+            </div>
+        </div>
+
+        {% if notebook.description %}
+        <div class="description">
+            <div class="label"><i class="fas fa-scroll"></i> Description:</div>
+            <div class="value">{{ notebook.description }}</div>
+        </div>
+        {% endif %}
+
+        <div class="actions">
+            <a href="{% url 'notebook_update' notebook.pk %}" class="btn btn-primary">
+                <i class="fas fa-edit"></i> Edit Notebook
+            </a>
+            <a href="{% url 'notebook_delete' notebook.pk %}" class="btn btn-danger">
+                <i class="fas fa-trash"></i> Delete Notebook
+            </a>
+        </div>
+    </div>
+</body>
+</html>

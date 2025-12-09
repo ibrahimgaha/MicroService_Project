@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete {{ notebook.name }} - Confirmation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: radial-gradient(circle at 20% 80%, rgba(255, 215, 0, 0.1) 0%, transparent 50%),
+                              radial-gradient(circle at 80% 20%, rgba(255, 69, 0, 0.1) 0%, transparent 50%),
+                              radial-gradient(circle at 40% 40%, rgba(138, 43, 226, 0.1) 0%, transparent 50%);
+            animation: twinkle 4s ease-in-out infinite alternate;
+        }
+        @keyframes twinkle {
+            0% { opacity: 0.3; }
+            100% { opacity: 0.7; }
+        }
+        .container {
+            max-width: 700px;
+            width: 100%;
+            background: linear-gradient(145deg, #f4e4bc 0%, #d4af37 100%);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3), inset 0 0 20px rgba(255, 215, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            border: 3px solid #8b4513;
+        }
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text fill="%238b4513" font-size="20" y="50%">✨</text></svg>') repeat;
+            opacity: 0.1;
+            animation: float 6s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        h1 {
+            font-family: 'Cinzel', serif;
+            color: #8b4513;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 2.5em;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .warning {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fab1a0 100%);
+            border: 2px solid #e17055;
+            color: #d63031;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            position: relative;
+        }
+        .warning::before {
+            content: '⚠️';
+            position: absolute;
+            top: -10px;
+            left: 10px;
+            font-size: 2em;
+        }
+        .warning i {
+            font-size: 2em;
+            margin-right: 15px;
+            color: #e17055;
+        }
+        .notebook-preview {
+            background: linear-gradient(135deg, #ecf0f1 0%, #bdc3c7 100%);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border: 2px solid #34495e;
+        }
+        .notebook-image {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 20px;
+            color: white;
+            font-size: 2em;
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+        }
+        .notebook-details {
+            flex: 1;
+        }
+        .detail-row {
+            margin-bottom: 10px;
+            display: flex;
+        }
+        .label {
+            font-weight: 600;
+            color: #2c3e50;
+            min-width: 100px;
+            margin-right: 10px;
+            font-family: 'Cinzel', serif;
+        }
+        .value {
+            color: #34495e;
+            font-weight: 500;
+        }
+        .price {
+            font-size: 1.2em;
+            color: #27ae60;
+            font-weight: bold;
+        }
+        .actions {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 3px solid #8b4513;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        .btn {
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            border: 2px solid #8b4513;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-family: 'Cinzel', serif;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+        .btn:hover::before {
+            left: 100%;
+        }
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+        }
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(231, 76, 60, 0.4);
+        }
+        .btn-secondary {
+            background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
+            color: white;
+            box-shadow: 0 5px 15px rgba(52, 73, 94, 0.3);
+        }
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(52, 73, 94, 0.4);
+        }
+        .back-link {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #8b4513;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            font-family: 'Cinzel', serif;
+        }
+        .back-link:hover {
+            color: #d4af37;
+        }
+        @media (max-width: 768px) {
+            .container {
+                margin: 20px;
+                padding: 20px;
+            }
+            h1 {
+                font-size: 2em;
+            }
+            .actions {
+                flex-direction: column;
+                align-items: center;
+            }
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="{% url 'notebook_detail' notebook.pk %}" class="back-link"><i class="fas fa-arrow-left"></i> Back to {{ notebook.name }}</a>
+        <h1><i class="fas fa-magic"></i> Delete Notebook</h1>
+
+        <div class="warning">
+            <i class="fas fa-exclamation-triangle"></i>
+            <div>
+                <strong>Warning:</strong> This action cannot be undone. Are you sure you want to delete this notebook? It's like destroying a magical artifact!
+            </div>
+        </div>
+
+        <div class="notebook-preview">
+            {% if notebook.image %}
+                <img src="{{ notebook.image.url }}" alt="{{ notebook.name }}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 10px; border: 2px solid #d4af37; margin-right: 20px;">
+            {% else %}
+                <div class="notebook-image">
+                    <i class="fas fa-book-open"></i>
+                </div>
+            {% endif %}
+            <div class="notebook-details">
+                <div class="detail-row">
+                    <span class="label">Name:</span>
+                    <span class="value">{{ notebook.name }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="label">Price:</span>
+                    <span class="value price">${{ notebook.price }}</span>
+                </div>
+                {% if notebook.description %}
+                <div class="detail-row">
+                    <span class="label">Description:</span>
+                    <span class="value">{{ notebook.description }}</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="actions">
+                <button type="submit" class="btn btn-danger">
+                    <i class="fas fa-wand-magic-sparkles"></i> Yes, Delete Notebook
+                </button>
+                <a href="{% url 'notebook_detail' notebook.pk %}" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

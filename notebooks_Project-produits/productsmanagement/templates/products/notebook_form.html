@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if notebook %}Edit{% else %}Add{% endif %} Magical Notebook</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: radial-gradient(circle at 20% 80%, rgba(255, 215, 0, 0.1) 0%, transparent 50%),
+                              radial-gradient(circle at 80% 20%, rgba(255, 69, 0, 0.1) 0%, transparent 50%),
+                              radial-gradient(circle at 40% 40%, rgba(138, 43, 226, 0.1) 0%, transparent 50%);
+            animation: twinkle 4s ease-in-out infinite alternate;
+        }
+        @keyframes twinkle {
+            0% { opacity: 0.3; }
+            100% { opacity: 0.7; }
+        }
+        .container {
+            max-width: 700px;
+            width: 100%;
+            background: linear-gradient(145deg, #f4e4bc 0%, #d4af37 100%);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3), inset 0 0 20px rgba(255, 215, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            border: 3px solid #8b4513;
+        }
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text fill="%238b4513" font-size="20" y="50%">✨</text></svg>') repeat;
+            opacity: 0.1;
+            animation: float 6s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        h1 {
+            font-family: 'Cinzel', serif;
+            color: #8b4513;
+            margin-bottom: 40px;
+            text-align: center;
+            font-size: 2.5em;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        .form-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2em;
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+            font-family: 'Cinzel', serif;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        input[type="text"], input[type="number"], textarea {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #d4af37;
+            border-radius: 10px;
+            font-size: 16px;
+            box-sizing: border-box;
+            background: rgba(255, 255, 255, 0.9);
+            color: #2c3e50;
+            font-family: 'Montserrat', sans-serif;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+        }
+        input[type="text"]:focus, input[type="number"]:focus, textarea:focus {
+            outline: none;
+            border-color: #f39c12;
+            box-shadow: 0 0 10px rgba(243, 156, 18, 0.3), inset 0 2px 5px rgba(0,0,0,0.1);
+            background: white;
+        }
+        textarea {
+            height: 120px;
+            resize: vertical;
+            font-family: 'Montserrat', sans-serif;
+        }
+        .error {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-top: 5px;
+            font-weight: 500;
+        }
+        .actions {
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 3px solid #8b4513;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        .btn {
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            border: 2px solid #8b4513;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-family: 'Cinzel', serif;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+        .btn:hover::before {
+            left: 100%;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+            color: white;
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.3);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(39, 174, 96, 0.4);
+        }
+        .btn-secondary {
+            background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
+            color: white;
+            box-shadow: 0 5px 15px rgba(52, 73, 94, 0.3);
+        }
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(52, 73, 94, 0.4);
+        }
+        .back-link {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #8b4513;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+            font-family: 'Cinzel', serif;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 15px;
+            border-radius: 20px;
+            border: 2px solid #d4af37;
+        }
+        .back-link:hover {
+            color: #d4af37;
+            background: rgba(255, 255, 255, 1);
+        }
+        .form-decoration {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            opacity: 0.3;
+            font-size: 3em;
+            color: #d4af37;
+        }
+        @media (max-width: 768px) {
+            .container {
+                margin: 20px;
+                padding: 20px;
+            }
+            h1 {
+                font-size: 2em;
+                flex-direction: column;
+                gap: 10px;
+            }
+            .form-icon {
+                width: 50px;
+                height: 50px;
+                font-size: 1.5em;
+            }
+            .actions {
+                flex-direction: column;
+                align-items: center;
+            }
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="{% url 'notebook_list' %}" class="back-link"><i class="fas fa-arrow-left"></i> Back to Hogwarts Library</a>
+        <div class="form-decoration">🪄</div>
+        <h1>
+            <div class="form-icon">
+                {% if notebook %}<i class="fas fa-edit"></i>{% else %}<i class="fas fa-plus-circle"></i>{% endif %}
+            </div>
+            {% if notebook %}Edit Magical Notebook{% else %}Add New Magical Notebook{% endif %}
+        </h1>
+
+        <form method="post" enctype="multipart/form-data">
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="id_name"><i class="fas fa-book"></i> Name:</label>
+                <input type="text" id="id_name" name="name" value="{% if notebook %}{{ notebook.name }}{% endif %}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="id_image"><i class="fas fa-image"></i> Image:</label>
+                <input type="file" id="id_image" name="image" accept="image/*">
+                {% if notebook.image %}
+                <div style="margin-top: 10px;">
+                    <img src="{{ notebook.image.url }}" style="max-width: 200px; max-height: 200px; border-radius: 10px; border: 2px solid #d4af37;">
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="id_price"><i class="fas fa-coins"></i> Price:</label>
+                <input type="number" id="id_price" name="price" step="0.01" value="{% if notebook %}{{ notebook.price }}{% endif %}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="id_description"><i class="fas fa-scroll"></i> Description:</label>
+                <textarea id="id_description" name="description">{% if notebook %}{{ notebook.description }}{% endif %}</textarea>
+            </div>
+
+            <div class="actions">
+                <button type="submit" class="btn btn-primary">
+                    {% if notebook %}<i class="fas fa-save"></i> Update{% else %}<i class="fas fa-magic"></i> Create{% endif %} Magical Notebook
+                </button>
+                <a href="{% url 'notebook_list' %}" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

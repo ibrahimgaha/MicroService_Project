@@ -1,0 +1,1 @@
+# Eureka client initialization will be done in apps.py or a management command

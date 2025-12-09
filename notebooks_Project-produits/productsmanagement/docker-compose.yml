@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  notebook-management:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - SECRET_KEY=django-insecure-%ep6m#^nqoh+elj%%_4zg4=f4k$qchi3d=0ppwq_ny2m1fei!t
+      - DEBUG=True
+      - ALLOWED_HOSTS=localhost,127.0.0.1
+      - DATABASE_NAME=db.sqlite3
+    volumes:
+      - ./media:/app/media

@@ -1,0 +1,36 @@
+############################
+# Global Ignore (Monorepo)
+############################
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE / Editor
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+
+# Environment variables
+.env
+*.env
+env/
+*/.env
+*/*.env
+
+# Logs
+*.log
+logs/
+*/logs/
+
+# Docker data
+docker-data/
+**/docker-data/
+
+# Cache / temp
+.cache/
+tmp/
+temp/
+**/__pycache__/
