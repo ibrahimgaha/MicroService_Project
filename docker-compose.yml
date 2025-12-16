@@ -1,6 +1,7 @@
 version: "3.8"
 
 services:
+
   eureka-server:
     build: ./eureka-server
     image: eurekaserver:latest
@@ -15,17 +16,16 @@ services:
     container_name: mysql
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: gestionCommande
+      MYSQL_DATABASE: gestionUser
     ports:
-      - "3308:3306"  # host port 3308 -> container 3306
+      - "3308:3306"
     networks:
       - commande-network
     healthcheck:
-        test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
-        interval: 10s
-        timeout: 5s
-        retries: 5
-
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   commande-service:
     build: ./commande-service
@@ -34,15 +34,34 @@ services:
     ports:
       - "9091:9091"
     depends_on:
-      eureka-server:
-        condition: service_started
       mysql:
         condition: service_healthy
+      eureka-server:
+        condition: service_started
     networks:
       - commande-network
     environment:
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/gestionCommande?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/gestionCommande?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+
+  user-service:
+    build: ./user-service
+    image: user-service:latest
+    container_name: user-service
+    ports:
+      - "9092:9092"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      eureka-server:
+        condition: service_started
+    networks:
+      - commande-network
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/gestionUser?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root
 
@@ -63,4 +82,3 @@ services:
 networks:
   commande-network:
     driver: bridge
-    
