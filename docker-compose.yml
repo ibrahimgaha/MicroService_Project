@@ -10,6 +10,26 @@ services:
       - "8761:8761"
     networks:
       - commande-network
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8761"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  config-server:
+    build: ./config-server
+    image: config-server:latest
+    container_name: config-server
+    ports:
+      - "9999:9999"
+    volumes:
+      - ./config-repo:/config-repo
+    depends_on:
+      - eureka-server
+    networks:
+      - commande-network
+    restart: unless-stopped
 
   mysql:
     image: mysql:8
@@ -26,6 +46,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    restart: unless-stopped
 
   commande-service:
     build: ./commande-service
@@ -34,17 +55,19 @@ services:
     ports:
       - "9091:9091"
     depends_on:
-      mysql:
-        condition: service_healthy
-      eureka-server:
-        condition: service_started
+      - mysql
+      - eureka-server
+      - config-server
     networks:
       - commande-network
     environment:
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
+      SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
+      SPRING_APPLICATION_NAME: commande-service
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/gestionCommande?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root
+    restart: unless-stopped
 
   user-service:
     build: ./user-service
@@ -53,17 +76,19 @@ services:
     ports:
       - "9092:9092"
     depends_on:
-      mysql:
-        condition: service_healthy
-      eureka-server:
-        condition: service_started
+      - mysql
+      - eureka-server
+      - config-server
     networks:
       - commande-network
     environment:
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
+      SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
+      SPRING_APPLICATION_NAME: user-service
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/gestionUser?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root
+    restart: unless-stopped
 
   gateway:
     build: ./gateway
@@ -72,12 +97,15 @@ services:
     ports:
       - "2020:2020"
     depends_on:
-      eureka-server:
-        condition: service_started
+      - eureka-server
+      - config-server
     networks:
       - commande-network
     environment:
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
+      SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
+      SPRING_APPLICATION_NAME: gateway
+    restart: unless-stopped
 
 networks:
   commande-network:
