@@ -140,9 +140,9 @@ REST_FRAMEWORK = {
 
 # Eureka Client Configuration
 EUREKA_CLIENT = {
-    'EUREKA_SERVER': 'http://localhost:8761/eureka',
+    'EUREKA_SERVER': config('EUREKA_SERVER', default='http://localhost:8761/eureka'),
     'APP_NAME': 'PRODUCTSMANAGEMENT',
-    'INSTANCE_HOST': 'localhost',
+    'INSTANCE_HOST': config('INSTANCE_HOST', default='localhost'),
     'INSTANCE_PORT': 8000,
     'INSTANCE_ID': 'PRODUCTSMANAGEMENT:8000',
 }

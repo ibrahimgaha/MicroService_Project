@@ -1,4 +1,5 @@
 from django.apps import AppConfig
+from django.conf import settings
 import threading
 import requests
 import asyncio
@@ -13,12 +14,18 @@ class ProductsConfig(AppConfig):
         """
         Initialise le client Eureka et enregistre le service Django au démarrage.
         """
+        eureka_server = settings.EUREKA_CLIENT['EUREKA_SERVER']
+        app_name = settings.EUREKA_CLIENT['APP_NAME']
+        instance_host = settings.EUREKA_CLIENT['INSTANCE_HOST']
+        instance_port = settings.EUREKA_CLIENT['INSTANCE_PORT']
+        instance_id = settings.EUREKA_CLIENT['INSTANCE_ID']
+
         eureka_client = EurekaClient(
-            eureka_server="http://localhost:8761/eureka",
-            app_name="PRODUCTSMANAGEMENT",
-            instance_host="localhost",
-            instance_port=8000,
-            instance_id="PRODUCTSMANAGEMENT:8000",
+            eureka_server=eureka_server,
+            app_name=app_name,
+            instance_host=instance_host,
+            instance_port=instance_port,
+            instance_id=instance_id,
         )
 
         def register_with_eureka():
@@ -26,16 +33,16 @@ class ProductsConfig(AppConfig):
                 # Données de l'instance pour l'enregistrement manuel
                 instance_data = {
                     "instance": {
-                        "instanceId": "PRODUCTSMANAGEMENT:8000",
-                        "hostName": "localhost",
-                        "app": "PRODUCTSMANAGEMENT",
-                        "ipAddr": "127.0.0.1",
+                        "instanceId": instance_id,
+                        "hostName": instance_host,
+                        "app": app_name,
+                        "ipAddr": instance_host,
                         "status": "UP",
-                        "port": {"$": 8000, "@enabled": "true"},
+                        "port": {"$": instance_port, "@enabled": "true"},
                         "securePort": {"$": 443, "@enabled": "false"},
-                        "healthCheckUrl": "http://localhost:8000/api/health/",
-                        "statusPageUrl": "http://localhost:8000/status/",
-                        "homePageUrl": "http://localhost:8000/",
+                        "healthCheckUrl": f"http://{instance_host}:{instance_port}/api/health/",
+                        "statusPageUrl": f"http://{instance_host}:{instance_port}/status/",
+                        "homePageUrl": f"http://{instance_host}:{instance_port}/",
                         "dataCenterInfo": {
                             "@class": "com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo",
                             "name": "MyOwn"
@@ -45,7 +52,7 @@ class ProductsConfig(AppConfig):
 
                 # Enregistrement manuel dans Eureka
                 response = requests.post(
-                    "http://localhost:8761/eureka/apps/PRODUCTSMANAGEMENT",
+                    f"{eureka_server}/apps/{app_name}",
                     json=instance_data,
                     headers={"Content-Type": "application/json"}
                 )

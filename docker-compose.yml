@@ -79,6 +79,25 @@ services:
     environment:
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
 
+  product-service:
+    build: ./notebooks_Project-produits/productsmanagement
+    image: product-service:latest
+    container_name: product-service
+    ports:
+      - "8000:8000"
+    depends_on:
+      eureka-server:
+        condition: service_started
+    networks:
+      - commande-network
+    environment:
+      EUREKA_SERVER: http://eureka-server:8761/eureka
+      INSTANCE_HOST: product-service
+      SECRET_KEY: your-secret-key-here
+      DEBUG: "True"
+      ALLOWED_HOSTS: product-service,localhost,127.0.0.1
+      DATABASE_NAME: db.sqlite3
+
 networks:
   commande-network:
     driver: bridge
