@@ -2,21 +2,46 @@ version: "3.8"
 
 services:
 
+  # =========================
+  # EUREKA SERVER
+  # =========================
   eureka-server:
     build: ./eureka-server
-    image: eurekaserver:latest
+    image: eureka-server:latest
     container_name: eureka-server
     ports:
       - "8761:8761"
     networks:
       - commande-network
 
+  # =========================
+  # CONFIG SERVER (PORT 9090)
+  # =========================
+  config-server:
+    build: ./config-server
+    image: config-server:latest
+    container_name: config-server
+    ports:
+      - "9090:9090"
+    depends_on:
+      eureka-server:
+        condition: service_started
+    networks:
+      - commande-network
+    environment:
+      SPRING_PROFILES_ACTIVE: native
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
+    volumes:
+      - ./config-repo:/config-repo
+
+  # =========================
+  # MYSQL
+  # =========================
   mysql:
     image: mysql:8
     container_name: mysql
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: gestionUser
     ports:
       - "3308:3306"
     networks:
@@ -27,25 +52,9 @@ services:
       timeout: 5s
       retries: 5
 
-  commande-service:
-    build: ./commande-service
-    image: commande-service:latest
-    container_name: commande-service
-    ports:
-      - "9091:9091"
-    depends_on:
-      mysql:
-        condition: service_healthy
-      eureka-server:
-        condition: service_started
-    networks:
-      - commande-network
-    environment:
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/gestionCommande?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: root
-
+  # =========================
+  # USER SERVICE
+  # =========================
   user-service:
     build: ./user-service
     image: user-service:latest
@@ -55,48 +64,60 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
+      config-server:
+        condition: service_started
       eureka-server:
         condition: service_started
     networks:
       - commande-network
     environment:
+      SPRING_APPLICATION_NAME: user-service
+      SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:9090
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/gestionUser?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: root
 
+  # =========================
+  # COMMANDE SERVICE
+  # =========================
+  commande-service:
+    build: ./commande-service
+    image: commande-service:latest
+    container_name: commande-service
+    ports:
+      - "9091:9091"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      config-server:
+        condition: service_started
+      eureka-server:
+        condition: service_started
+    networks:
+      - commande-network
+    environment:
+      SPRING_APPLICATION_NAME: commande-service
+      SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:9090
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
+
+  # =========================
+  # GATEWAY
+  # =========================
   gateway:
-    build: ./gateway
+    build: ./gateway-service
     image: gateway:latest
-    container_name: gateway
+    container_name: gateway-service
     ports:
       - "2020:2020"
     depends_on:
+      config-server:
+        condition: service_started
       eureka-server:
         condition: service_started
     networks:
       - commande-network
     environment:
+      SPRING_APPLICATION_NAME: gateway
+      SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:9090
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
-
-  product-service:
-    build: ./notebooks_Project-produits/productsmanagement
-    image: product-service:latest
-    container_name: product-service
-    ports:
-      - "8000:8000"
-    depends_on:
-      eureka-server:
-        condition: service_started
-    networks:
-      - commande-network
-    environment:
-      EUREKA_SERVER: http://eureka-server:8761/eureka
-      INSTANCE_HOST: product-service
-      SECRET_KEY: your-secret-key-here
-      DEBUG: "True"
-      ALLOWED_HOSTS: product-service,localhost,127.0.0.1
-      DATABASE_NAME: db.sqlite3
 
 networks:
   commande-network:
