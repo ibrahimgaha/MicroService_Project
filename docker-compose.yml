@@ -119,6 +119,36 @@ services:
       SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:9090
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
 
+  # =========================
+  # PRODUCT SERVICE
+  # =========================
+  product-service:
+    build: ./notebooks_Project-produits/productsmanagement
+    image: product-service:latest
+    container_name: product-service
+    ports:
+      - "9095:9095"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      config-server:
+        condition: service_started
+      eureka-server:
+        condition: service_started
+    networks:
+      - commande-network
+    environment:
+      SECRET_KEY: django-super-secret-key-123456
+      DEBUG: true
+      ALLOWED_HOSTS: localhost,127.0.0.1,product-service
+      DATABASE_NAME: db.sqlite3
+      EUREKA_SERVER: http://eureka-server:8761/eureka
+      INSTANCE_HOST: product-service
+      INSTANCE_PORT: 9095
+      INSTANCE_ID: PRODUCTSMANAGEMENT:9095
+
 networks:
   commande-network:
     driver: bridge
+
+
