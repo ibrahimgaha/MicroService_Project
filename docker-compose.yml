@@ -1,38 +1,6 @@
-version: "3.8"
+version: "3.9"
 
 services:
-
-  # =========================
-  # EUREKA SERVER
-  # =========================
-  eureka-server:
-    build: ./eureka-server
-    image: eureka-server:latest
-    container_name: eureka-server
-    ports:
-      - "8761:8761"
-    networks:
-      - commande-network
-
-  # =========================
-  # CONFIG SERVER (PORT 9090)
-  # =========================
-  config-server:
-    build: ./config-server
-    image: config-server:latest
-    container_name: config-server
-    ports:
-      - "9090:9090"
-    depends_on:
-      eureka-server:
-        condition: service_started
-    networks:
-      - commande-network
-    environment:
-      SPRING_PROFILES_ACTIVE: native
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
-    volumes:
-      - ./config-repo:/config-repo
 
   # =========================
   # MYSQL
@@ -46,11 +14,39 @@ services:
       - "3308:3306"
     networks:
       - commande-network
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+
+  # =========================
+  # EUREKA SERVER
+  # =========================
+  eureka-server:
+    build: ./eureka-server
+    image: eureka-server:latest
+    container_name: eureka-server
+    ports:
+      - "8761:8761"
+    networks:
+      - commande-network
+    depends_on:
+      - mysql
+
+  # =========================
+  # CONFIG SERVER
+  # =========================
+  config-server:
+    build: ./config-server
+    image: config-server:latest
+    container_name: config-server
+    ports:
+      - "9090:9090"
+    networks:
+      - commande-network
+    depends_on:
+      - eureka-server
+    environment:
+      SPRING_PROFILES_ACTIVE: native
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
+    volumes:
+      - ./config-repo:/config-repo
 
   # =========================
   # USER SERVICE
@@ -61,15 +57,12 @@ services:
     container_name: user-service
     ports:
       - "9092:9092"
-    depends_on:
-      mysql:
-        condition: service_healthy
-      config-server:
-        condition: service_started
-      eureka-server:
-        condition: service_started
     networks:
       - commande-network
+    depends_on:
+      - mysql
+      - config-server
+      - eureka-server
     environment:
       SPRING_APPLICATION_NAME: user-service
       SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:9090
@@ -84,22 +77,19 @@ services:
     container_name: commande-service
     ports:
       - "9091:9091"
-    depends_on:
-      mysql:
-        condition: service_healthy
-      config-server:
-        condition: service_started
-      eureka-server:
-        condition: service_started
     networks:
       - commande-network
+    depends_on:
+      - mysql
+      - config-server
+      - eureka-server
     environment:
       SPRING_APPLICATION_NAME: commande-service
       SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:9090
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
 
   # =========================
-  # GATEWAY
+  # GATEWAY SERVICE
   # =========================
   gateway:
     build: ./gateway-service
@@ -107,17 +97,44 @@ services:
     container_name: gateway-service
     ports:
       - "2020:2020"
+    networks:
+      - commande-network
     depends_on:
-      config-server:
-        condition: service_started
-      eureka-server:
-        condition: service_started
+      - eureka-server
+    environment:
+        SPRING_APPLICATION_NAME: gateway-service
+
+  # =========================
+  # PROMETHEUS
+  # =========================
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9095:9090"
+    networks:
+      - commande-network
+    depends_on:
+      - gateway
+      - user-service
+      - commande-service
+      - eureka-server
+      
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - "9096:3000"   # host port 9096 → container port 3000
     networks:
       - commande-network
     environment:
-      SPRING_APPLICATION_NAME: gateway
-      SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:9090
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - prometheus
+
+
 
   # =========================
   # PRODUCT SERVICE
