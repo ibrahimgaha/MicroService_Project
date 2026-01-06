@@ -40,17 +40,21 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'products',
+    "django_prometheus",
 ]
 
 MIDDLEWARE = [
-    'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "django_prometheus.middleware.PrometheusBeforeMiddleware",
+    "django.middleware.security.SecurityMiddleware",
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django_prometheus.middleware.PrometheusAfterMiddleware",
 ]
+
 
 ROOT_URLCONF = 'productsmanagement.urls'
 
@@ -143,6 +147,6 @@ EUREKA_CLIENT = {
     'EUREKA_SERVER': config('EUREKA_SERVER', default='http://localhost:8761/eureka'),
     'APP_NAME': 'PRODUCTSMANAGEMENT',
     'INSTANCE_HOST': config('INSTANCE_HOST', default='localhost'),
-    'INSTANCE_PORT': 9095,
-    'INSTANCE_ID': 'PRODUCTSMANAGEMENT:9095',
+    'INSTANCE_PORT': 8000,
+    'INSTANCE_ID': 'PRODUCTSMANAGEMENT:8000',
 }

@@ -24,4 +24,4 @@ RUN adduser --disabled-password --gecos '' django && chown -R django:django /app
 USER django
 
 # Run the application
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["sh", "-c", "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"]

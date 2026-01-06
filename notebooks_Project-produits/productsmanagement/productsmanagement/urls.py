@@ -16,12 +16,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.http import JsonResponse
 from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('products.urls')),
+    path("", include("django_prometheus.urls")),
+    path("health/", lambda request: JsonResponse({"status": "UP"})),
 ]
 
 if settings.DEBUG:

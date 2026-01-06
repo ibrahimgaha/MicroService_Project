@@ -1,7 +1,6 @@
 version: "3.9"
 
 services:
-
   # =========================
   # MYSQL
   # =========================
@@ -102,7 +101,7 @@ services:
     depends_on:
       - eureka-server
     environment:
-        SPRING_APPLICATION_NAME: gateway-service
+      SPRING_APPLICATION_NAME: gateway-service
 
   # =========================
   # PROMETHEUS
@@ -121,20 +120,18 @@ services:
       - user-service
       - commande-service
       - eureka-server
-      
+
   grafana:
     image: grafana/grafana:latest
     container_name: grafana
     ports:
-      - "9096:3000"   # host port 9096 → container port 3000
+      - "9096:3000"
     networks:
       - commande-network
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=admin
     depends_on:
       - prometheus
-
-
 
   # =========================
   # PRODUCT SERVICE
@@ -144,16 +141,13 @@ services:
     image: product-service:latest
     container_name: product-service
     ports:
-      - "9095:9095"
-    depends_on:
-      mysql:
-        condition: service_healthy
-      config-server:
-        condition: service_started
-      eureka-server:
-        condition: service_started
+      - "9099:8000"
     networks:
       - commande-network
+    depends_on:
+      - mysql
+      - config-server
+      - eureka-server
     environment:
       SECRET_KEY: django-super-secret-key-123456
       DEBUG: true
@@ -161,11 +155,9 @@ services:
       DATABASE_NAME: db.sqlite3
       EUREKA_SERVER: http://eureka-server:8761/eureka
       INSTANCE_HOST: product-service
-      INSTANCE_PORT: 9095
-      INSTANCE_ID: PRODUCTSMANAGEMENT:9095
+      INSTANCE_PORT: 8000
+      INSTANCE_ID: PRODUCTSMANAGEMENT:8000
 
 networks:
   commande-network:
     driver: bridge
-
-
