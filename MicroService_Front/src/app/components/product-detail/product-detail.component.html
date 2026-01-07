@@ -1,0 +1,31 @@
+<div class="container">
+  <button class="back-button" (click)="goBack()">← Back to Products</button>
+
+  <div *ngIf="loading" class="loading">
+    Loading product details...
+  </div>
+
+  <div *ngIf="error" class="error">
+    {{ error }}
+  </div>
+
+  <div *ngIf="product && !loading" class="product-detail">
+    <div class="product-header">
+      <img *ngIf="product.image" [src]="product.image" [alt]="product.name" class="product-image">
+      <div class="product-info">
+        <h1>{{ product.name }}</h1>
+        <p class="brand">{{ product.brand }}</p>
+        <p class="price">${{ product.price }}</p>
+      </div>
+    </div>
+
+    <div class="product-description">
+      <h2>Description</h2>
+      <p>{{ product.description }}</p>
+    </div>
+
+    <div class="actions">
+      <button class="order-button" (click)="createOrder()">Order Now</button>
+    </div>
+  </div>
+</div>

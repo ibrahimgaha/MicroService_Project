@@ -100,8 +100,10 @@ services:
       - commande-network
     depends_on:
       - eureka-server
+      - config-server
     environment:
       SPRING_APPLICATION_NAME: gateway-service
+      SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:9090
 
   # =========================
   # PROMETHEUS
@@ -130,6 +132,9 @@ services:
       - commande-network
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - ./grafana-provisioning:/etc/grafana/provisioning
+      - ./grafana-provisioning/dashboards:/var/lib/grafana/dashboards
     depends_on:
       - prometheus
 
@@ -156,7 +161,7 @@ services:
       EUREKA_SERVER: http://eureka-server:8761/eureka
       INSTANCE_HOST: product-service
       INSTANCE_PORT: 8000
-      INSTANCE_ID: PRODUCTSMANAGEMENT:8000
+      INSTANCE_ID: product-service:8000
 
 networks:
   commande-network:

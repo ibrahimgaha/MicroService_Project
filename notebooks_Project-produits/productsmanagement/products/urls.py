@@ -3,9 +3,10 @@ from rest_framework.routers import DefaultRouter
 from . import views
 
 router = DefaultRouter()
-router.register(r'api/notebooks', views.NotebookViewSet)
+router.register(r'notebooks', views.NotebookViewSet, basename='notebook')
 
 urlpatterns = [
+    
     # Web views
     path('', views.notebook_list, name='notebook_list'),
     path('notebook/<int:pk>/', views.notebook_detail, name='notebook_detail'),
